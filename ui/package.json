@@ -1,0 +1,13 @@
+{
+  "name": "ui",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.4.1",
+    "bootstrap-vue": "^2.0.0-rc.14",
+    "nuxt-edge": "^2.5.0-25869609.13cb0f73"
+  }
+}

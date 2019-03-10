@@ -1,0 +1,14 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node -r esm app.js",
+    "dev": "nodemon"
+  },
+  "dependencies": {
+    "esm": "^3.2.14",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10"
+  }
+}
