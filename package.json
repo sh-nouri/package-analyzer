@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "ui": "cd ui && yarn dev",
-    "api": "cd api && yarn dev"
+    "api": "cd api && yarn dev",
+    "test": "node -r esm api/test"
   },
   "workspaces": [
     "ui",
