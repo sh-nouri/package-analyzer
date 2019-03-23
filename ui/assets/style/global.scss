@@ -1,0 +1,45 @@
+//normalize
+
+a{
+  color: inherit;
+  text-decoration: none;
+  &:hover{
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+ul{
+  list-style: none;
+}
+
+.fa{
+  font-size: 1.3em;
+}
+
+.spinner-grow-sm {
+  color: $product-color;
+}
+
+.btn-primary{
+  background-color: $product-color;
+  border-color: $product-color;
+  &:hover{
+    background-color: $product-hover-color;
+    border-color: $product-hover-color;
+  }
+  &:focus{
+    box-shadow: 0 0 0 0.2rem rgba($product-hover-color, 0.5);
+  }
+}
+.btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .show > .btn-primary.dropdown-toggle:focus{
+  box-shadow: 0 0 0 0.2rem rgba($product-hover-color, 0.5);
+}
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle{
+  background-color: $product-active-color;
+  border-color: $product-active-color;
+}
+.input-group-text{
+   background-color: rgba($product-hover-color, 0.5);
+  border: $product-color;
+ }

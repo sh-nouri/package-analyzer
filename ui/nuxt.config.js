@@ -9,5 +9,9 @@ export default {
   },
   proxy: {
     '/api': 'http://localhost:3001'
-  }
+  },
+  css: [
+    'font-awesome/css/font-awesome.css',
+    '~/assets/index.scss'
+  ]
 }

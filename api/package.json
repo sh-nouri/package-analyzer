@@ -7,8 +7,11 @@
     "dev": "nodemon"
   },
   "dependencies": {
-    "esm": "^3.2.14",
+    "axios": "^0.18.0",
+    "esm": "^3.2.20",
     "express": "^4.16.4",
+    "mongodb": "^3.2.1",
+    "mongoose": "^5.4.19",
     "nodemon": "^1.18.10"
   }
 }

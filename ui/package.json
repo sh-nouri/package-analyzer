@@ -8,6 +8,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.4.1",
     "bootstrap-vue": "^2.0.0-rc.15",
-    "nuxt-edge": "^2.5.0-25869609.13cb0f73"
+    "node-sass": "^4.11.0",
+    "nuxt": "^2.5.1"
   }
 }
