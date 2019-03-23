@@ -1,14 +1,12 @@
 <template>
-    <div>
-        Home Page
-    </div>
+  <div>Bests</div>
 </template>
 
 <script>
-  export default {
-  }
+export default {
+  name: "bests-components"
+};
 </script>
 
 <style scoped>
-
 </style>
