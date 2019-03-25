@@ -8,7 +8,6 @@
 import Search from "~/components/common/search";
 
 export default {
-  name: "offer-component",
   components: {
     Search
   },

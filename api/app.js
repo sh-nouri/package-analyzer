@@ -1,12 +1,17 @@
 import express from 'express'
-import { Package } from './db'
+import bodyParser from 'body-parser'
+import router from './router'
 
 const app = express()
 
-app.listen(3001)
-console.log('API Running: ' + 'http://localhost:3001')
+app.use(bodyParser.json())
 
+app.use('/api', router)
 
-app.get('/api/test', (req, res) => {
-  res.json({ Shabnam: 'works!' })
-})
+app.listen(3001, (error) => {
+  if (error) {
+    console.error(error)
+    process.exit(1)
+  }
+  console.log('API Running: ' + 'http://localhost:3001')
+});

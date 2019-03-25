@@ -8,10 +8,13 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
     "esm": "^3.2.20",
     "express": "^4.16.4",
+    "lodash": "^4.17.11",
     "mongodb": "^3.2.1",
     "mongoose": "^5.4.19",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "semver": "^5.6.0"
   }
 }

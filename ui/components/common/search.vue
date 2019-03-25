@@ -1,20 +1,24 @@
 <template>
     <div class="search mt-5">
-        <b-form inline>
-
-            <label class="sr-only" for="inlineFormInputGroupUsername2">{{placeHolder}}</label>
+        <b-form inline @submit.prevent="search">
+            <label class="sr-only">{{placeHolder}}</label>
             <b-input-group prepend="📦" class=" mb-sm-0 w-75">
-                <b-input id="inlineFormInputGroupUsername2" :placeholder="placeHolder" />
+                <b-input v-model="searchInput" :placeholder="placeHolder" />
             </b-input-group>
-
-            <b-button @click="search" variant="primary" class="w-25">Packagi</b-button>
+            <b-button variant="primary" class="w-25" @click="search">
+                Packagi
+            </b-button>
         </b-form>
     </div>
 </template>
 
 <script>
   export default {
-    name: "analyze-component",
+    data() {
+      return {
+        searchInput: ''
+      }
+    },
     props: {
       placeHolder:{
         type: String,
@@ -23,7 +27,7 @@
     },
     methods:{
       search(){
-        this.$emit('search')
+        this.$emit('search', this.searchInput)
       }
     }
   }

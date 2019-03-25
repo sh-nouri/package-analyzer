@@ -8,7 +8,10 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.4.1",
     "bootstrap-vue": "^2.0.0-rc.15",
+    "font-awesome": "^4.7.0",
     "node-sass": "^4.11.0",
-    "nuxt": "^2.5.1"
+    "nuxt": "^2.5.1",
+    "sass-loader": "^7.1.0",
+    "vued3tree": "^3.6.4"
   }
 }

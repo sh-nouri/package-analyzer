@@ -1,4 +1,4 @@
-import NPMCrawler from './crawlers/npm'
+import NPMCrawler from './npm/NPMCrawler'
 
 async function main() {
   const npmCrawler = new NPMCrawler();
