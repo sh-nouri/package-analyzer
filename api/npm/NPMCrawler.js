@@ -1,6 +1,8 @@
 import axios from 'axios'
 import semver from 'semver'
 import { Package } from '../db'
+import * as NPMAPI from './api'
+
 
 export default class NPMCrawler {
   constructor(name, version, useCache = true) {
@@ -84,14 +86,16 @@ export default class NPMCrawler {
       const url = 'https://registry.npmjs.org/' + name
       console.log('Fetching ' + url)
       const raw = await axios.get(url).then(r => r.data)
-      const normalized = this.normalize((raw))
+      let test = await NPMAPI.suggestions(name)
+      const score = test.find(s=> s.package.name === name)
+      const normalized = this.normalize((raw), score.score)
       pkg = await Package.findOneAndUpdate({ name }, normalized, { new: true, upsert: true })
     }
 
     return pkg
   }
 
-  normalize(rawPkg) {
+  normalize(rawPkg, score) {
     let license = rawPkg.license || ''
     if (typeof license !== 'string') {
       license = license.type || ''
@@ -100,6 +104,7 @@ export default class NPMCrawler {
     return {
       ...rawPkg,
       license,
+      score
     }
   }
 }

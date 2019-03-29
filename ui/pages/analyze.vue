@@ -7,7 +7,7 @@
       <br>
       <b-progress v-model="progress"></b-progress>
 
-      <Tree :value="tree" />
+      <!--<Tree :value="tree" />-->
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@ export default {
       const { progress } = await this.$axios.$get('/api/package/crawl?name=' + this.name)
       this.progress = progress
 
-      this.tree = await await this.$axios.$get('/api/package/tree?name=' + this.name)
+      // this.tree = await await this.$axios.$get('/api/package/tree?name=' + this.name)
 
       if (progress !== 100) {
         await new Promise(resolve => setTimeout(resolve, 1000))

@@ -13,7 +13,8 @@ const packageSchema = new Schema({
   time: {},
   versions: {},
   'dist-tags': {},
-  deprecated: String
+  deprecated: String,
+  score: {}
 })
 
 packageSchema.methods.getMatchedVersion = function(range) {

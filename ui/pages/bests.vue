@@ -6,8 +6,8 @@
 
     <div class="results">
       <div class="results__item" v-for="result in results">
-        Name: <router-link :to="`/analyze?name=${result.name}`">{{ result.name }}</router-link> <br>
-        Latest: {{ result.version}}
+        Name: <router-link :to="`/analyze?name=${result.package.name}`">{{ result.package.name }}</router-link> <br>
+        Latest: {{ result.package.version}}
       </div>
     </div>
   </div>
