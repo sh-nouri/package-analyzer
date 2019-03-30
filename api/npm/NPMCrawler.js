@@ -1,8 +1,6 @@
 import axios from 'axios'
-import semver from 'semver'
 import { Package } from '../db'
 import * as NPMAPI from './api'
-
 
 export default class NPMCrawler {
   constructor(name, version, useCache = true) {
@@ -70,14 +68,13 @@ export default class NPMCrawler {
 
     await Promise.all(Object.entries(matched.dependencies || {})
       .map(async ([dependencyName, dependencyRange]) => {
-      const queueId = dependencyName + '@' + dependencyRange
-      this.queue.add(queueId)
-      // console.log(queueId)
-      await this.crawl(dependencyName, dependencyRange, depth + 1)
-      this.queue.delete(queueId)
-    }))
+        const queueId = dependencyName + '@' + dependencyRange
+        this.queue.add(queueId)
+        // console.log(queueId)
+        await this.crawl(dependencyName, dependencyRange, depth + 1)
+        this.queue.delete(queueId)
+      }))
   }
-
 
   async getPackage(name, useCache) {
     let pkg = useCache ? await Package.findOne({ name }) : null
@@ -88,7 +85,7 @@ export default class NPMCrawler {
       const raw = await axios.get(url).then(r => r.data)
 
       const result = await NPMAPI.suggestions(name)
-      const item = result.find(s=> s.package.name === name)
+      const item = result.find(s => s.package.name === name)
       const normalized = this.normalize((raw), item ? item.score : undefined)
 
       pkg = await Package.findOneAndUpdate({ name }, normalized, { new: true, upsert: true })
