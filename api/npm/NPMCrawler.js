@@ -86,9 +86,11 @@ export default class NPMCrawler {
       const url = 'https://registry.npmjs.org/' + name
       console.log('Fetching ' + url)
       const raw = await axios.get(url).then(r => r.data)
-      let test = await NPMAPI.suggestions(name)
-      const score = test.find(s=> s.package.name === name)
-      const normalized = this.normalize((raw), score.score)
+
+      const result = await NPMAPI.suggestions(name)
+      const item = result.find(s=> s.package.name === name)
+      const normalized = this.normalize((raw), item ? item.score : undefined)
+
       pkg = await Package.findOneAndUpdate({ name }, normalized, { new: true, upsert: true })
     }
 

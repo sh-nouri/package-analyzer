@@ -33,7 +33,9 @@ export default {
     }
   },
   mounted() {
-    this.fetch()
+    if (this.name){
+      this.fetch()
+    }
   },
   methods: {
     async fetch() {
@@ -43,13 +45,20 @@ export default {
       // this.tree = await await this.$axios.$get('/api/package/tree?name=' + this.name)
 
       if (progress !== 100) {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        this.fetch()
+        this._timeOut = setTimeout(() => this.fetch(), 1000)
+      }
+      if (progress === 100) {
+        await this.$axios.$get('/api/package/analyze?name=' + this.name)
       }
     },
     changeSearch(name) {
       this.$router.push('/analyze?name=' + name)
       window.reload()
+    }
+  },
+  beforeDestroy() {
+    if (this._timeOut) {
+      clearTimeout(this._timeOut)
     }
   }
 };
