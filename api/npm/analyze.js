@@ -5,7 +5,7 @@ class Node {
   constructor({
     name,
     range,
-    parentNode,
+    parentNode
   }) {
     this.id = name + '@' + range
     this.name = name
@@ -45,7 +45,7 @@ class Node {
       return
     }
 
-    this.matched =  this.pkg.getMatchedVersionPackage(this.range)
+    this.matched = this.pkg.getMatchedVersionPackage(this.range)
     if (!this.matched) {
       // TODO
       return
@@ -94,7 +94,6 @@ class Node {
     this.addMessages('error', message, impact)
   }
 
-
   analyze() {
     this.analyzeNodeSubNodes()
     this.analyzeNodeRange()
@@ -106,7 +105,7 @@ class Node {
 
   analyzeNodeRange() {
     if (!validateVersion(this.range)) {
-      this.addError(`Bad range for ${this.pkg.name}`, .3)
+      this.addError(`Bad range for ${this.pkg.name}`, 0.3)
       return
     }
 
@@ -115,14 +114,12 @@ class Node {
 
     if (latestMajor > currentMajor) {
       this.addError(`${this.pkg.name} package is outdated, there are ${latestMajor - currentMajor} major changes after this version`,
-        (latestMajor - currentMajor)/10)
+        (latestMajor - currentMajor) / 10)
     }
   }
 }
 
-
-
-export default async function analyzePackage(name, range){
+export default async function analyzePackage(name, range) {
   const node = new Node({
     name,
     range

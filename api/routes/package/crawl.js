@@ -2,7 +2,7 @@ import NPMCrawler from '../../npm/NPMCrawler'
 
 const jobs = {}
 
-export default async (req, res) => {
+export default (req, res) => {
   const { name, version = 'latest' } = req.query
 
   if (!jobs[name]) {

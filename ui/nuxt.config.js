@@ -5,7 +5,7 @@ export default {
     'bootstrap-vue/nuxt'
   ],
   axios: {
-    proxy: true,
+    proxy: true
   },
   proxy: {
     '/api': 'http://localhost:3001'

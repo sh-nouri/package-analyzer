@@ -5,7 +5,6 @@ import packageCrawl from './routes/package/crawl'
 import packageTree from './routes/package/tree'
 import packageAnalyze from './routes/package/analyze'
 
-
 const router = Router()
 
 router.get('/package/search', packageSearch)

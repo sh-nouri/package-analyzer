@@ -14,4 +14,4 @@ app.listen(3001, (error) => {
     process.exit(1)
   }
   console.log('API Running: ' + 'http://localhost:3001')
-});
+})

@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
-import semver from "semver";
+import semver from 'semver'
 
 const packageSchema = new Schema({
   _id: String,
@@ -17,7 +17,7 @@ const packageSchema = new Schema({
   score: {}
 })
 
-packageSchema.methods.getMatchedVersion = function(range) {
+packageSchema.methods.getMatchedVersion = function (range) {
   for (const tag in this['dist-tags']) {
     if (tag === range) {
       return this['dist-tags'][tag]
@@ -30,7 +30,7 @@ packageSchema.methods.getMatchedVersion = function(range) {
   }
 }
 
-packageSchema.methods.getMatchedVersionPackage = function(range) {
+packageSchema.methods.getMatchedVersionPackage = function (range) {
   return this.versions[this.getMatchedVersion(range)]
 }
 
@@ -40,5 +40,3 @@ packageSchema.methods.getLatest = function () {
 }
 
 export default mongoose.model('Package', packageSchema)
-
-
