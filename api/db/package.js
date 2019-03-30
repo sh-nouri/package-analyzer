@@ -34,6 +34,11 @@ packageSchema.methods.getMatchedVersionPackage = function(range) {
   return this.versions[this.getMatchedVersion(range)]
 }
 
+packageSchema.methods.getLatest = function () {
+  const latestVersion = this['dist-tags'].latest
+  return this.versions[latestVersion]
+}
+
 export default mongoose.model('Package', packageSchema)
 
 

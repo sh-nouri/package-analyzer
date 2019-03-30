@@ -1,6 +1,5 @@
 import { Package } from '../db'
-import semver from 'semver'
-
+import { getMajor, validateVersion } from '../util/major'
 
 class Node {
   constructor({
@@ -17,7 +16,7 @@ class Node {
     this.matched = null
     this.dependencies = []
     this.subNodes = 0
-    this.errors = []
+    this.messages = []
 
     this._parentNode = parentNode
     this._fetchedDependencies = parentNode ? parentNode._fetchedDependencies : new Set()
@@ -31,7 +30,7 @@ class Node {
       version: this.version,
       depth: this.depth,
       subNodes: this.subNodes,
-      errors: this.errors,
+      messages: this.messages,
       childNodes: this.childNodes.map(node => node.toJSON())
     }
   }
@@ -79,9 +78,22 @@ class Node {
     await this.analyze()
   }
 
-  addError(errorName) {
-    this.errors.push(errorName)
+  addMessages(type, message, impact) {
+    this.messages.push({
+      type,
+      message,
+      impact
+    })
   }
+
+  addWarn(message, impact) {
+    this.addMessages('warn', message, impact)
+  }
+
+  addError(message, impact) {
+    this.addMessages('error', message, impact)
+  }
+
 
   analyze() {
     this.analyzeNodeSubNodes()
@@ -92,14 +104,19 @@ class Node {
     this.subNodes = this.childNodes.reduce((sum, child) => sum + child.subNodes || 0, 1)
   }
 
-  analyzeNodeRange(node) {
-    // const { pkg, matched } = node._data
-    // semver.gt('1.2.3', '9.8.7')
+  analyzeNodeRange() {
+    if (!validateVersion(this.range)) {
+      this.addError(`Bad range for ${this.pkg.name}`, .3)
+      return
+    }
 
-    // if (!regex.match) {
-      // node.errors.push('ERROR_BADE_RANGE')
-      // return
-    // }
+    const currentMajor = getMajor(this.matched.version)
+    const latestMajor = getMajor(this.pkg.getLatest().version)
+
+    if (latestMajor > currentMajor) {
+      this.addError(`${this.pkg.name} package is outdated, there are ${latestMajor - currentMajor} major changes after this version`,
+        (latestMajor - currentMajor)/10)
+    }
   }
 }
 
