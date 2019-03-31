@@ -5,7 +5,5 @@ export default async (req, res) => {
 
   const result = await analyzePackage(name, version)
 
-  res.json({
-    result
-  })
+  res.json(result)
 }

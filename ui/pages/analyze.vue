@@ -8,7 +8,8 @@
 
       <div v-if="analyzeResult">
         <h2>Analyze Result</h2>
-        <Tree :value="analyzeResult.result" height="1000px" width="1000px" />
+        <pre>{{ JSON.stringify(analyzeResult, null, 2) }}</pre>
+        <Tree :value="analyzeResult.tree" height="1000px" width="1000px" />
       </div>
       <div v-else>
         <p>Crawling...</p>

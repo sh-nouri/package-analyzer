@@ -11,50 +11,49 @@ class Node {
     this.name = name
     this.range = range
     this.depth = parentNode ? parentNode.depth + 1 : 0
-
     this.childNodes = []
-    this.matched = null
-    this.dependencies = []
     this.subNodes = 0
     this.messages = []
+    this.analyze = null
 
+    this._matched = null
+    this._pkg = null
     this._parentNode = parentNode
+    this._dependencies = []
     this._fetchedDependencies = parentNode ? parentNode._fetchedDependencies : new Set()
   }
 
   toJSON() {
-    return {
-      id: this.id,
-      name: this.name,
-      range: this.range,
-      version: this.version,
-      depth: this.depth,
-      subNodes: this.subNodes,
-      messages: this.messages,
-      childNodes: this.childNodes.map(node => node.toJSON())
+    const json = {}
+    for (const key in this) {
+      if (key[0] !== '_') {
+        json[key] = this[key]
+      }
     }
+    json.childNodes = json.childNodes.map(node => node.toJSON())
+    return json
   }
 
   async fetch() {
-    this.pkg = await Package.findOne({
+    this._pkg = await Package.findOne({
       name: this.name
     })
 
-    if (!this.pkg) {
+    if (!this._pkg) {
       // TODO
       return
     }
 
-    this.matched = this.pkg.getMatchedVersionPackage(this.range)
-    if (!this.matched) {
+    this._matched = this._pkg.getMatchedVersionPackage(this.range)
+    if (!this._matched) {
       // TODO
       return
     }
-    this.version = this.matched.version
-    this.dependencies = this.matched.dependencies || {}
+    this.version = this._matched.version
+    this._dependencies = this._matched.dependencies || {}
 
-    for (const depName in this.dependencies) {
-      const depRange = this.dependencies[depName]
+    for (const depName in this._dependencies) {
+      const depRange = this._dependencies[depName]
 
       // Prevent loops
       const key = depName + '@' + depRange
@@ -75,57 +74,94 @@ class Node {
     await Promise.all(this.childNodes.map(node => node.fetch()))
 
     // Analyze self
-    await this.analyze()
+    this.analyze = this.doAnalyze()
   }
 
-  addMessages(type, message, impact) {
+  addMessage(type, message) {
     this.messages.push({
       type,
-      message,
-      impact
+      message
     })
   }
 
-  addWarn(message, impact) {
-    this.addMessages('warn', message, impact)
+  addWarn(message) {
+    this.addMessage('warn', message)
   }
 
-  addError(message, impact) {
-    this.addMessages('error', message, impact)
+  addError(message) {
+    this.addMessage('error', message)
   }
 
-  analyze() {
-    this.analyzeNodeSubNodes()
-    this.analyzeNodeRange()
+  doAnalyze() {
+    const measurements = [
+      {
+        name: 'range',
+        function: 'analyzeNodeRange',
+        weight: 1
+      },
+      {
+        name: 'downloads',
+        function: 'analyzeDownloads',
+        weight: 1
+      }
+    ]
+
+    let totalWeight = 0
+    let totalScore = 0
+
+    for (const measure of measurements) {
+      measure.score = this[measure.function]()
+      delete measure.function
+      totalWeight += measure.weight
+      totalScore += measure.score
+    }
+
+    const score = totalScore / totalWeight
+
+    return {
+      score,
+      measurements
+    }
   }
 
-  analyzeNodeSubNodes() {
-    this.subNodes = this.childNodes.reduce((sum, child) => sum + child.subNodes || 0, 1)
+  analyzeDownloads() {
+
   }
 
   analyzeNodeRange() {
-    if (!validateVersion(this.range)) {
-      this.addError(`Bad range for ${this.pkg.name}`, 0.3)
-      return
+    if (this.depth > 0 && !validateVersion(this.range)) {
+      this.addError(`Bad range for ${this._pkg.name}`, 0.3)
+      return 0
     }
 
-    const currentMajor = getMajor(this.matched.version)
-    const latestMajor = getMajor(this.pkg.getLatest().version)
+    const currentMajor = getMajor(this._matched.version)
+    const latestMajor = getMajor(this._pkg.getLatest().version)
 
     if (latestMajor > currentMajor) {
-      this.addError(`${this.pkg.name} package is outdated, there are ${latestMajor - currentMajor} major changes after this version`,
-        (latestMajor - currentMajor) / 10)
+      this.addWarn(`${this._pkg.name} package is outdated, there are ${latestMajor - currentMajor} major changes after this version`)
     }
+
+    this.addMessage('info', JSON.stringify({ latestMajor, currentMajor }))
+
+    return 1 - ((latestMajor - currentMajor) / 10)
   }
 }
 
+function getSummary(rootNode, summary = {}) {
+  return summary
+}
+
 export default async function analyzePackage(name, range) {
-  const node = new Node({
+  const rootNode = new Node({
     name,
     range
   })
+  await rootNode.fetch()
 
-  await node.fetch()
+  const summary = getSummary(rootNode)
 
-  return node.toJSON()
+  return {
+    summary,
+    tree: rootNode.toJSON()
+  }
 }
