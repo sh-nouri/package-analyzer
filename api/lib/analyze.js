@@ -103,7 +103,23 @@ class Node {
         name: 'downloads',
         function: 'analyzeDownloads',
         weight: 1
-      }
+      },
+      {
+        name: 'star',
+        function: 'analyzeStars',
+        weight: 1
+      },
+      {
+        name: 'issues',
+        function: 'analyzeIssues',
+        weight: 1
+      },
+      {
+        name: 'updates',
+        function: 'analyzeUpdates',
+        weight: 1
+      },
+
     ]
 
     let totalWeight = 0
@@ -123,9 +139,37 @@ class Node {
       measurements
     }
   }
+  analyzeStars() {
+    return this._pkg.githubRepo.stars
+  }
+  analyzeUpdates() {
+    const updates = Object.values(this._pkg.time)
+      .map(time => new Date(time))
+      .sort((a, b) => b - a)
 
+    let last = new Date()
+    let sum = 0
+    // const diffs = []
+    for (const update of updates) {
+      sum += last - update
+      // diffs.push((last - update)/ (1000 * 60 * 60 * 24))
+      last = update
+    }
+    let averageUpdate = (sum / updates.length) / (1000 * 60 * 60 * 24)
+
+    console.log(this._pkg.name, averageUpdate)
+  }
+  analyzeIssues() {
+    if (this._pkg.githubRepo.issues){
+     return Math.round(this._pkg.githubRepo.openIssues / this._pkg.githubRepo.issues)
+    } else return 1
+  }
   analyzeDownloads() {
-
+    let totalDownload = 0;
+    for (let download of this._pkg.downloads){
+       totalDownload = totalDownload + download.downloads;
+    }
+    return Math.round(totalDownload/this._pkg.downloads.length)
   }
 
   analyzeNodeRange() {
