@@ -62,7 +62,7 @@ export default {
     },
     changeSearch(name) {
       this.$router.push('/analyze?name=' + name)
-      window.reload()
+      window.location.reload()
     }
   }
 }

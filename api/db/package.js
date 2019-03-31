@@ -9,12 +9,18 @@ const packageSchema = new Schema({
   readme: String,
   keywords: {},
   license: String,
-
+  maintainers: [{
+    name: String,
+    email: String
+  }],
   time: {},
   versions: {},
   'dist-tags': {},
   deprecated: String,
-  score: {}
+  score: {},
+  downloads: {},
+  githubRepoName: String,
+  githubRepo: {}
 })
 
 packageSchema.methods.getMatchedVersion = function (range) {

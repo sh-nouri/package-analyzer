@@ -1,4 +1,4 @@
-import NPMCrawler from '../../npm/NPMCrawler'
+import NPMCrawler from '../../lib/crawler'
 
 const jobs = {}
 

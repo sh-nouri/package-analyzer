@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { Package } from '../db'
-import * as NPMAPI from './api'
+import * as npm from './npm'
+import * as github from './github'
 
 export default class NPMCrawler {
   constructor(name, version, useCache = true) {
@@ -80,30 +80,29 @@ export default class NPMCrawler {
     let pkg = useCache ? await Package.findOne({ name }) : null
 
     if (!pkg) {
-      const url = 'https://registry.npmjs.org/' + name
-      console.log('Fetching ' + url)
-      const raw = await axios.get(url).then(r => r.data)
+      console.log('Crawling ' + name + ' ...')
+      const [rawPkg, score, downloads] = await Promise.all([
+        npm.getPackage(name),
+        npm.getScore(name),
+        npm.downloads(name)
+      ])
 
-      const result = await NPMAPI.suggestions(name)
-      const item = result.find(s => s.package.name === name)
-      const normalized = this.normalize((raw), item ? item.score : undefined)
+      let githubRepo = {}
+      if (rawPkg.githubRepoName) {
+        githubRepo = await github.getRepo(rawPkg.githubRepoName)
+      }
 
-      pkg = await Package.findOneAndUpdate({ name }, normalized, { new: true, upsert: true })
+      pkg = await Package.findOneAndUpdate({ name }, {
+        ...rawPkg,
+        score,
+        downloads,
+        githubRepo
+      }, {
+        new: true,
+        upsert: true
+      })
     }
 
     return pkg
-  }
-
-  normalize(rawPkg, score) {
-    let license = rawPkg.license || ''
-    if (typeof license !== 'string') {
-      license = license.type || ''
-    }
-
-    return {
-      ...rawPkg,
-      license,
-      score
-    }
   }
 }

@@ -1,4 +1,4 @@
-import analyzePackage from '../../npm/analyze'
+import analyzePackage from '../../lib/analyze'
 
 export default async (req, res) => {
   const { name, version = 'latest' } = req.query

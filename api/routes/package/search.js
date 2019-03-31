@@ -1,8 +1,8 @@
 // import { pick } from 'lodash'
-import * as NPMAPI from '../../npm/api'
+import * as npm from '../../lib/npm'
 
 export default async (req, res) => {
-  const results = await NPMAPI.suggestions(req.query.name)
+  const results = await npm.suggestions(req.query.name)
 
   // results = results.map(result => pick(result, ['name']))
 
