@@ -28,12 +28,13 @@ export default {
     options() {
       return {
         ...this.$attrs,
-        physics: false,
+        physics: {
+        },
         nodes: {
           shape: 'dot',
-          // size: 100,
-          font: {
-            size: 50
+          size: 25,
+          shapeProperties: {
+            interpolation: false
           }
         },
         edges: {
@@ -43,12 +44,7 @@ export default {
           width: 0.15
         },
         layout: {
-          hierarchical: {
-            enabled: true,
-            sortMethod: 'directed',
-            levelSeparation: 700,
-            nodeSpacing: 300
-          }
+          improvedLayout: false
         }
       }
     }
@@ -66,18 +62,20 @@ export default {
     }
   },
   methods: {
-    flattenNodes(node, nodes, edges) {
+    flattenNodes(node, nodes, edges, parent) {
+      const mass = Math.max(1, 4 - node.depth) * 0.5
+
       nodes.push({
         id: node.id,
-        label: node.name,
-        group: node.depth
+        label: node.name + '-' + mass,
+        group: parent ? parent.id : 'root'
       })
       for (const child of node.childNodes || []) {
         edges.push({
           from: node.id,
           to: child.id
         })
-        this.flattenNodes(child, nodes, edges)
+        this.flattenNodes(child, nodes, edges, node)
       }
     },
     init() {
