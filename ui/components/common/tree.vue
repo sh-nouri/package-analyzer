@@ -29,6 +29,8 @@ export default {
       return {
         ...this.$attrs,
         physics: {
+          minVelocity: 10,
+          maxVelocity: 100
         },
         nodes: {
           shape: 'dot',
@@ -37,14 +39,13 @@ export default {
             interpolation: false
           }
         },
-        edges: {
-          color: {
-            inherit: true
-          },
-          width: 0.15
-        },
         layout: {
-          improvedLayout: false
+          randomSeed: 2
+        },
+        interaction: {
+          navigationButtons: true,
+          hover: true,
+          dragNodes: false
         }
       }
     }
@@ -67,7 +68,7 @@ export default {
 
       nodes.push({
         id: node.id,
-        label: node.name + '-' + mass,
+        label: node.name,
         group: parent ? parent.id : 'root'
       })
       for (const child of node.childNodes || []) {
