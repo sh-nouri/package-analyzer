@@ -8,8 +8,8 @@
 
       <div v-if="analyzeResult">
         <h2>Analyze Result</h2>
-        <pre>{{ JSON.stringify(analyzeResult, null, 2) }}</pre>
-        <Tree :value="analyzeResult.tree" height="1000px" width="1000px" />
+        <!-- <pre>{{ JSON.stringify(analyzeResult, null, 2) }}</pre> -->
+        <Tree :value="analyzeResult.tree" height="1000px" />
       </div>
       <div v-else>
         <p>Crawling...</p>
@@ -51,13 +51,15 @@ export default {
   },
   methods: {
     async fetch() {
+      console.log('Fetch...')
       const { progress } = await this.$axios.$get('/api/package/crawl?name=' + this.name)
       this.progress = progress
 
+      console.log(progress)
+
       if (progress !== 100) {
         this._timeOut = setTimeout(() => this.fetch(), 1000)
-      }
-      if (progress === 100) {
+      } else {
         this.analyzeResult = await this.$axios.$get('/api/package/analyze?name=' + this.name)
       }
     },
