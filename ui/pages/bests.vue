@@ -1,20 +1,24 @@
 <template>
   <div>
-    <search :placeHolder="'Enter Package Name'" @search="getPackageData"/>
+    <search :place-holder="'Enter Package Name'" @search="getPackageData" />
 
-    <div v-if="searching">Searching...</div>
+    <div v-if="searching">
+      Searching...
+    </div>
 
     <div class="results">
-      <div class="results__item" v-for="result in results">
-        Name: <router-link :to="`/analyze?name=${result.package.name}`">{{ result.package.name }}</router-link> <br>
-        Latest: {{ result.package.version}}
+      <div v-for="result in results" :key="result.package.name" class="results__item">
+        Name: <router-link :to="`/analyze?name=${result.package.name}`">
+          {{ result.package.name }}
+        </router-link> <br>
+        Latest: {{ result.package.version }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Search from "~/components/common/search";
+import Search from '~/components/common/search'
 
 export default {
   components: {
@@ -34,7 +38,7 @@ export default {
       this.searching = false
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

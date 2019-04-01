@@ -3,7 +3,9 @@
   "scripts": {
     "ui": "cd ui && yarn dev",
     "api": "cd api && yarn dev",
-    "test": "node -r esm api/test"
+    "test": "node -r esm api/test",
+    "lint": "eslint --ext .js,.vue .",
+    "lint-fix": "yarn lint --fix"
   },
   "workspaces": [
     "ui",

@@ -40,7 +40,7 @@ export default {
       const packages = uniq([...dependencies, ...devDependencies])
       this.startSearch(packages)
     },
-    async startSearch(packages) {
+    startSearch(packages) {
       const _packages = {}
       for (const name of packages) {
         _packages[name] = {

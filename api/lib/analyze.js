@@ -118,7 +118,7 @@ class Node {
         name: 'updates',
         function: 'analyzeUpdates',
         weight: 1
-      },
+      }
 
     ]
 
@@ -155,21 +155,21 @@ class Node {
       // diffs.push((last - update)/ (1000 * 60 * 60 * 24))
       last = update
     }
-    let averageUpdate = (sum / updates.length) / (1000 * 60 * 60 * 24)
+    const averageUpdate = (sum / updates.length) / (1000 * 60 * 60 * 24)
 
     console.log(this._pkg.name, averageUpdate)
   }
   analyzeIssues() {
-    if (this._pkg.githubRepo.issues){
-     return 1-(this._pkg.githubRepo.openIssues / this._pkg.githubRepo.issues)
+    if (this._pkg.githubRepo.issues) {
+      return 1 - (this._pkg.githubRepo.openIssues / this._pkg.githubRepo.issues)
     } else return 1
   }
   analyzeDownloads() {
-    let totalDownload = 0;
-    for (let download of this._pkg.downloads){
-       totalDownload = totalDownload + download.downloads;
+    let totalDownload = 0
+    for (const download of this._pkg.downloads) {
+      totalDownload = totalDownload + download.downloads
     }
-    return Math.max(1, (totalDownload/this._pkg.downloads.length) / 500)
+    return Math.max(1, (totalDownload / this._pkg.downloads.length) / 500)
   }
 
   analyzeNodeRange() {
