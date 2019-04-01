@@ -161,7 +161,7 @@ class Node {
   }
   analyzeIssues() {
     if (this._pkg.githubRepo.issues){
-     return Math.round(this._pkg.githubRepo.openIssues / this._pkg.githubRepo.issues)
+     return 1-(this._pkg.githubRepo.openIssues / this._pkg.githubRepo.issues)
     } else return 1
   }
   analyzeDownloads() {
@@ -169,7 +169,7 @@ class Node {
     for (let download of this._pkg.downloads){
        totalDownload = totalDownload + download.downloads;
     }
-    return Math.round(totalDownload/this._pkg.downloads.length)
+    return Math.max(1, (totalDownload/this._pkg.downloads.length) / 500)
   }
 
   analyzeNodeRange() {

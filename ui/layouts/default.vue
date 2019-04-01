@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="fixed-top">
+    <div>
         <LayoutHeader />
     </div>
-    <main>
+    <main class="my-5">
         <LayoutTabs />
         <div class="container">
             <Nuxt/>
@@ -31,7 +31,6 @@ export default {
 @import "assets/style/vars";
 
 main {
-    margin-top: 100px;
     min-height: 90vh;
 }
 </style>
