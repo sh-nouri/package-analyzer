@@ -2,17 +2,17 @@
   <sticky>
     <div slot="card-content">
       <p class="font-weight-bold font-italic">
-        Sort By:
+        Sort by
       </p>
-      <b-form-select v-model="sort" class="filters__select" :options="sortOptions" :select-size="3" />
+      <b-form-radio-group v-model="sort" stacked class="filters__select" :options="sortOptions" :select-size="3" />
       <hr>
       <p class="font-weight-bold font-italic">
-        Filter By FrameWork:
+        Filter by framework
       </p>
       <b-form-group>
         <b-form-checkbox-group
-          v-model="filter"
-          :options="filterOptions"
+          v-model="frameworks"
+          :options="frameworksOptions"
           switches
           stacked
         />
@@ -28,10 +28,16 @@ export default {
   components: {
     Sticky
   },
+  props: {
+    value: {
+      type: Object,
+      required: true
+    }
+  },
   data() {
     return {
-      sort: null,
-      filter: ''
+      sort: this.value.sort,
+      frameworks: this.value.frameworks || []
     }
   },
   computed: {
@@ -41,13 +47,28 @@ export default {
         { value: 3, text: 'quality' }
       ]
     },
-    filterOptions() {
+    frameworksOptions() {
       return [{ value: 'vue', text: 'Vue' },
         { value: 'react', text: 'React' },
         { value: 'jQuery', text: 'jQuery' },
         { value: 'angular', text: 'Angularjs' },
         { value: 'javaScript', text: 'javaScript' }
       ]
+    }
+  },
+  watch: {
+    frameworks: 'onChange',
+    sort: 'onChange'
+  },
+  mounted() {
+    this.onChange()
+  },
+  methods: {
+    onChange() {
+      this.$emit('input', {
+        frameworks: this.frameworks,
+        sort: this.sort
+      })
     }
   }
 }

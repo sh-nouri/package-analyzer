@@ -18,16 +18,20 @@ export default {
     placeHolder: {
       type: String,
       required: true
+    },
+    value: {
+      type: String,
+      required: true
     }
   },
   data() {
     return {
-      searchInput: ''
+      searchInput: this.value
     }
   },
   methods: {
     search() {
-      this.$emit('search', this.searchInput)
+      this.$emit('input', this.searchInput)
     }
   }
 }

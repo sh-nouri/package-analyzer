@@ -1,17 +1,17 @@
 <template>
   <div>
-    <search :place-holder="'Enter Package Name'" @search="getPackageData" />
-
-    <div v-if="searching">
-      Searching...
-    </div>
-
-    <div v-if="results.length" class="results row">
+    <search v-model="name" :place-holder="'Enter Package Name'" />
+    <div class="results row">
       <div class="col-lg-3">
-        <sticky />
+        <Filters v-model="filters" />
       </div>
       <div class="col-lg-9">
-        <div class="row bests__cards">
+        <div v-if="searching" class="row">
+          <div class="m-5">
+            Searching...
+          </div>
+        </div>
+        <div v-else class="row bests__cards">
           <b-card v-for="result in results" :key="result.package.name" class="col-lg-4 mr-3 mt-4" :title="result.package.name" :sub-title="date(result.package.date)">
             <b-card-text class="bests__description">
               {{ result.package.description }}
@@ -19,10 +19,9 @@
             <b-card-text v-if="result.package.author">
               <p>Author: <small>{{ result.package.author.name }}</small></p>
             </b-card-text>
-
-            <div v-dragscroll.x>
-              <b-card-text class="bests__badges pb-2">
-                <b-badge v-for="keyword in result.package.keywords" :key="keyword" class="py-2 px-2 mr-2" href="#" variant="primary">
+            <div>
+              <b-card-text v-dragscroll class="bests__badges pb-2">
+                <b-badge v-for="keyword in result.package.keywords" :key="keyword" class="py-2 px-2 mr-2" variant="primary">
                   {{ keyword }}
                 </b-badge>
               </b-card-text>
@@ -45,13 +44,13 @@
 
 <script>
 import Search from '~/components/common/search'
-import Sticky from '~/components/stickys/filters'
-import { dragscroll } from 'vue-dragscroll'
+import Filters from '~/components/stickys/filters'
+import dragscroll from 'vue-dragscroll/src/directive'
 
 export default {
   components: {
     Search,
-    Sticky
+    Filters
   },
   directives: {
     dragscroll
@@ -59,19 +58,33 @@ export default {
   data() {
     return {
       results: [],
-      searching: false
+      searching: false,
+      name: this.$route.query.name || '',
+      filters: this.$route.query.filters
+        ? JSON.parse(decodeURIComponent(this.$route.query.filters)) : {}
     }
+  },
+  watch: {
+    name: 'doSearch',
+    filters: 'doSearch'
+  },
+  mounted() {
+    this.doSearch()
   },
   methods: {
     date(date) {
       const today = new Date()
       const update = new Date(date)
-      const last = (today - update) / (1000 * 60 * 60 * 24)
-      return `last upadtae is ${last}days ago`
+      const last = Math.round((today - update) / (1000 * 60 * 60 * 24))
+      return `last upadtae ${last} day${last > 1 ? 's' : ''} ago`
     },
-    async getPackageData(name) {
+    async doSearch() {
+      this.$router.replace(`?name=${this.name}&filters=${JSON.stringify(this.filters)}`)
       this.searching = true
-      const { results } = await this.$axios.$get('/api/package/search?name=' + name)
+
+      const q = [...this.filters.frameworks, this.name].join('+')
+
+      const { results } = await this.$axios.$get('/api/package/search?name=' + q)
       this.results = results
       this.searching = false
     }
