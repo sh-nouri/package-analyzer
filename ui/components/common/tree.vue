@@ -64,8 +64,6 @@ export default {
   },
   methods: {
     flattenNodes(node, nodes, edges, parent) {
-      const mass = Math.max(1, 4 - node.depth) * 0.5
-
       nodes.push({
         id: node.id,
         label: node.name,

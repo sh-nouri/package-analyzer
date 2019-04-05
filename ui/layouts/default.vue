@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-        <LayoutHeader />
+      <LayoutHeader />
     </div>
     <main id="scroll" class="my-5">
         <LayoutTabs />
@@ -14,9 +14,9 @@
 </template>
 
 <script>
-import LayoutHeader from "~/components/layout/header";
-import LayoutTabs from "~/components/layout/tabs";
-import LayoutFooter from "~/components/layout/footer";
+import LayoutHeader from '~/components/layout/header'
+import LayoutTabs from '~/components/layout/tabs'
+import LayoutFooter from '~/components/layout/footer'
 
 export default {
   components: {
@@ -24,7 +24,7 @@ export default {
     LayoutTabs,
     LayoutFooter
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

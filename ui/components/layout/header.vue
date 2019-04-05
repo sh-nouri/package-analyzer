@@ -4,22 +4,22 @@
     <ul class="float-right header__medias ml-auto mr-4 mb-0">
       <li class="d-inline ml-2">
         <a href>
-          <i class="fa fa-twitter-square" aria-hidden="true"/>
+          <i class="fa fa-twitter-square" aria-hidden="true" />
         </a>
       </li>
       <li class="d-inline ml-2">
         <a href>
-          <i class="fa fa-linkedin-square" aria-hidden="true"/>
+          <i class="fa fa-linkedin-square" aria-hidden="true" />
         </a>
       </li>
       <li class="d-inline ml-2">
         <a href>
-          <i class="fa fa-github" aria-hidden="true"/>
+          <i class="fa fa-github" aria-hidden="true" />
         </a>
       </li>
       <li class="d-inline ml-2">
         <a href>
-          <i class="fa fa-envelope" aria-hidden="true"/>
+          <i class="fa fa-envelope" aria-hidden="true" />
         </a>
       </li>
     </ul>

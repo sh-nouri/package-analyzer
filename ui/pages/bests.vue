@@ -1,8 +1,10 @@
 <template>
   <div>
-    <search :placeHolder="'Enter Package Name'" @search="getPackageData"/>
+    <search :place-holder="'Enter Package Name'" @search="getPackageData" />
 
-    <div v-if="searching">Searching...</div>
+    <div v-if="searching">
+      Searching...
+    </div>
 
     <div v-if="results.length" class="results row">
       <div class="col-lg-3">
@@ -30,8 +32,8 @@
 </template>
 
 <script>
-import Search from "~/components/common/search";
-import Sticky from "~/components/stickys/filters";
+import Search from '~/components/common/search';
+import Sticky from '~/components/stickys/filters';
 import { dragscroll } from 'vue-dragscroll';
 
 export default {
@@ -62,7 +64,7 @@ export default {
       this.searching = false
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

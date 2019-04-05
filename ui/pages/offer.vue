@@ -1,11 +1,11 @@
 <template>
   <div>
-    <search :placeHolder="'packagi a name'" @search="getPackageData"/>
+    <search :place-holder="'packagi a name'" @search="getPackageData" />
   </div>
 </template>
 
 <script>
-import Search from "~/components/common/search";
+import Search from '~/components/common/search'
 
 export default {
   components: {
@@ -13,10 +13,10 @@ export default {
   },
   methods: {
     getPackageData() {
-      console.log("called");
+      console.log('called')
     }
   }
-};
+}
 </script>
 
 <style scoped>
