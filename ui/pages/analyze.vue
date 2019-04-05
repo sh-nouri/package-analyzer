@@ -2,27 +2,35 @@
   <div>
     <search :value="name" :place-holder="'Enter Package Name'" @search="changeSearch" />
     <div v-if="name">
-      <div class="row" v-if="analyzeResult">
+      <div v-if="analyzeResult" class="row">
         <div class="col col-md-3">
-          <sticky :data="analyzeResult.tree.analyze"/>
+          <sticky :data="analyzeResult.tree.analyze" />
         </div>
         <div class="col col-md-9 mt-4">
-          <h2>{{name}}</h2>
+          <h2>{{ name }}</h2>
           <div class="analyze__messages">
             <ul :class="[collapsed? 'analyze__messages__collapsed' : 'analyze__messages__uncollapsed']">
-              <li class="analyze__texts" v-for="message in analyzeResult.tree.messages"
-                  :class="{'analyze__messages--positive': message.type ==='positive', 'analyze__messages--negative': message.type ==='error', 'analyze__messages--warn': message.type ==='warn' }">
-                <p class="d-inline-block font-weight-bold">In Level {{ analyzeResult.tree.depth +1}}:</p>
-                <p class="d-inline-block ml-2 mb-0">{{message.message}}</p>
+              <li
+                v-for="message in analyzeResult.tree.messages"
+                :key="message.message"
+                class="analyze__texts"
+                :class="{'analyze__messages--positive': message.type ==='positive', 'analyze__messages--negative': message.type ==='error', 'analyze__messages--warn': message.type ==='warn' }"
+              >
+                <p class="d-inline-block font-weight-bold">
+                  In Level {{ analyzeResult.tree.depth +1 }}:
+                </p>
+                <p class="d-inline-block ml-2 mb-0">
+                  {{ message.message }}
+                </p>
                 <hr>
               </li>
             </ul>
             <hr class="mb-0">
-            <button @click="collapsed = !collapsed" class="analyze__extender btn">
-              <i :class="{'analyze__rotate': collapsed}" class="fa fa-angle-down" aria-hidden="true"></i>
+            <button class="analyze__extender btn" @click="collapsed = !collapsed">
+              <i :class="{'analyze__rotate': collapsed}" class="fa fa-angle-down" aria-hidden="true" />
             </button>
           </div>
-          <b-modal size="xl" id="tree-modal">
+          <b-modal id="tree-modal" size="xl">
             <tree :value="analyzeResult.tree" height="1000px" />
           </b-modal>
         </div>
@@ -38,7 +46,7 @@
 <script>
 import Search from '~/components/common/search'
 import Tree from '~/components/common/tree'
-import Sticky from '~/components/stickys/data';
+import Sticky from '~/components/stickys/data'
 
 export default {
   components: {

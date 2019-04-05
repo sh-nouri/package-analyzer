@@ -159,15 +159,14 @@ class Node {
       last = update
     }
     const averageUpdate = (sum / updates.length) / (1000 * 60 * 60 * 24)
-    if(averageUpdate< 30) {
+    if (averageUpdate < 30) {
       this.addPositiveText(`${this._pkg.name} package average update is ${averageUpdate}`)
     } if (averageUpdate > 70) {
       this.addWarn(`${this._pkg.name} package average update is ${averageUpdate}`)
-    } if (averageUpdate> 150) {
+    } if (averageUpdate > 150) {
       this.addError(`${this._pkg.name} package average update is ${averageUpdate}`)
     }
     return averageUpdate
-
   }
   analyzeIssues() {
     if (this._pkg.githubRepo.issues) {

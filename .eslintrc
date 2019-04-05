@@ -4,6 +4,7 @@
   ],
   "rules": {
     "no-console": 0,
-    "camelcase": 0
+    "camelcase": 0,
+    "vue/no-v-html": 0
   }
 }

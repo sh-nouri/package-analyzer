@@ -4,10 +4,10 @@
       <LayoutHeader />
     </div>
     <main id="scroll" class="my-5">
-        <LayoutTabs />
-        <div class="container">
-            <Nuxt/>
-        </div>
+      <LayoutTabs />
+      <div class="container">
+        <Nuxt />
+      </div>
     </main>
     <LayoutFooter />
   </div>
