@@ -91,6 +91,9 @@ class Node {
   addError(message) {
     this.addMessage('error', message)
   }
+  addPositiveText(message) {
+    this.addMessage('positive', message)
+  }
 
   doAnalyze() {
     const measurements = [
@@ -140,7 +143,7 @@ class Node {
     }
   }
   analyzeStars() {
-    return this._pkg.githubRepo.stars
+    return this._pkg.githubRepo.starts
   }
   analyzeUpdates() {
     const updates = Object.values(this._pkg.time)
@@ -156,8 +159,15 @@ class Node {
       last = update
     }
     let averageUpdate = (sum / updates.length) / (1000 * 60 * 60 * 24)
+    if(averageUpdate< 30) {
+      this.addPositiveText(`${this._pkg.name} package average update is ${averageUpdate}`)
+    } if (averageUpdate > 70) {
+      this.addWarn(`${this._pkg.name} package average update is ${averageUpdate}`)
+    } if (averageUpdate> 150) {
+      this.addError(`${this._pkg.name} package average update is ${averageUpdate}`)
+    }
+    return averageUpdate
 
-    console.log(this._pkg.name, averageUpdate)
   }
   analyzeIssues() {
     if (this._pkg.githubRepo.issues){
@@ -184,8 +194,6 @@ class Node {
     if (latestMajor > currentMajor) {
       this.addWarn(`${this._pkg.name} package is outdated, there are ${latestMajor - currentMajor} major changes after this version`)
     }
-
-    this.addMessage('info', JSON.stringify({ latestMajor, currentMajor }))
 
     return 1 - ((latestMajor - currentMajor) / 10)
   }

@@ -1,16 +1,31 @@
 <template>
   <div>
     <search :value="name" :place-holder="'Enter Package Name'" @search="changeSearch" />
-    <hr>
     <div v-if="name">
-      <h1>{{ name }}</h1>
-      <br>
-
-      <div v-if="analyzeResult">
-        <h2>Analyze Result</h2>
-        <Tree :value="analyzeResult.tree" height="1000px" />
-
-        <pre>{{ JSON.stringify(analyzeResult, null, 2) }}</pre>
+      <div class="row" v-if="analyzeResult">
+        <div class="col col-md-3">
+          <sticky :data="analyzeResult.tree.analyze"/>
+        </div>
+        <div class="col col-md-9 mt-4">
+          <h2>{{name}}</h2>
+          <div class="analyze__messages">
+            <ul :class="[collapsed? 'analyze__messages__collapsed' : 'analyze__messages__uncollapsed']">
+              <li class="analyze__texts" v-for="message in analyzeResult.tree.messages"
+                  :class="{'analyze__messages--positive': message.type ==='positive', 'analyze__messages--negative': message.type ==='error', 'analyze__messages--warn': message.type ==='warn' }">
+                <p class="d-inline-block font-weight-bold">In Level {{ analyzeResult.tree.depth +1}}:</p>
+                <p class="d-inline-block ml-2 mb-0">{{message.message}}</p>
+                <hr>
+              </li>
+            </ul>
+            <hr class="mb-0">
+            <button @click="collapsed = !collapsed" class="analyze__extender btn">
+              <i :class="{'analyze__rotate': collapsed}" class="fa fa-angle-down" aria-hidden="true"></i>
+            </button>
+          </div>
+          <b-modal size="xl" id="tree-modal">
+            <tree :value="analyzeResult.tree" height="1000px" />
+          </b-modal>
+        </div>
       </div>
       <div v-else>
         <p>Crawling...</p>
@@ -23,16 +38,19 @@
 <script>
 import Search from '~/components/common/search'
 import Tree from '~/components/common/tree'
+import Sticky from '~/components/stickys/data';
 
 export default {
   components: {
     Search,
-    Tree
+    Tree,
+    Sticky
   },
   data() {
     return {
       progress: 0,
-      analyzeResult: null
+      analyzeResult: false,
+      collapsed: false
     }
   },
   computed: {
@@ -66,11 +84,66 @@ export default {
     },
     changeSearch(name) {
       this.$router.push('/analyze?name=' + name)
-      window.location.reload()
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  @import "~assets/style/vars";
+  .analyze{
+    &__texts{
+      &:last-child{
+        hr{
+          display: none;
+        }
+      }
+    }
+    &__rotate{
+      transform: rotate(-180deg);
+    }
+    &__extender{
+      bottom: -20px;
+      left: 50%;
+      position: absolute;
+      background: #ffff;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    &__messages{
+      position: relative;
+      &__collapsed{
+        height: 100%;
+      }
+      &__uncollapsed{
+        height: 200px;
+        overflow: hidden;
+      }
+      &--positive{
+        &:before{
+          color: $success;
+          display: inline-block;
+          font: normal normal normal 14px/1 FontAwesome;
+          content: "\f00c";
+        }
+      }
+      &--negative{
+        &:before{
+          color: $error;
+          display: inline-block;
+          font: normal normal normal 14px/1 FontAwesome;
+          content: "\f00d";
+        }
+      }
+      &--warn{
+        &:before{
+          color: $warn;
+          display: inline-block;
+          font: normal normal normal 14px/1 FontAwesome;
+          content: "\f12a";
+        }
+      }
+
+    }
+  }
 </style>

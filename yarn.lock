@@ -8559,6 +8559,11 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+vue-dragscroll@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.yarnpkg.com/vue-dragscroll/-/vue-dragscroll-1.8.3.tgz#ddde45d2bf5f02c1d27a748f6f0a3fd4950913cb"
+  integrity sha512-Rp9FquSwgleZVwQ/2w1zRsfBBCFfTwbpFR2xPvi+Y2GV5RQ/1rVfZoKtncqxMwrXHAdHaTtDraYSh1Lc10dLqA==
+
 vue-eslint-parser@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/vue-eslint-parser/-/vue-eslint-parser-5.0.0.tgz#00f4e4da94ec974b821a26ff0ed0f7a78402b8a1"
