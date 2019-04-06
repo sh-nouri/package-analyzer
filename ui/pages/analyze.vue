@@ -8,29 +8,31 @@
       <hr>
       <div v-if="analyzeResult" class="row">
         <div class="col col-md-3">
-          <sticky :data="analyzeResult.tree.analyze" />
+          <DataSticky :data="analyzeResult.analyze" />
         </div>
         <div class="col col-md-9 mt-4">
           <div class="analyze__messages">
-            <ul :class="[collapsed? 'analyze__messages__collapsed' : 'analyze__messages__uncollapsed']">
+            <ul>
               <li
-                v-for="message in analyzeResult.tree.messages"
+                v-for="message in displayMessages"
                 :key="message.message"
                 class="analyze__texts"
-                :class="{'analyze__messages--positive': message.type ==='positive', 'analyze__messages--negative': message.type ==='error', 'analyze__messages--warn': message.type ==='warn' }"
+                :class="['analyze__messages--' + message.type]"
               >
-                <p class="d-inline-block font-weight-bold">
-                  In Level {{ analyzeResult.tree.depth +1 }}:
-                </p>
-                <p class="d-inline-block ml-2 mb-0">
+                <span>
+                  <small class="text-muted"> {{ message.path.join(' » ') }}</small>
+                </span>
+                <p>
+                  <b-badge>{{ message.scope }}</b-badge>
+                  <b-badge>{{ message.id }}</b-badge>
                   {{ message.message }}
                 </p>
                 <hr>
               </li>
             </ul>
             <hr class="mb-0">
-            <button class="analyze__extender btn" @click="collapsed = !collapsed">
-              <i :class="{'analyze__rotate': collapsed}" class="fa fa-angle-down" aria-hidden="true" />
+            <button class="analyze__extender btn" @click="maxMessageDepth++">
+              <i class="fa fa-angle-down" aria-hidden="true" />
             </button>
           </div>
           <b-modal id="tree-modal" size="xl" lazy>
@@ -59,13 +61,13 @@
 <script>
 import Search from '~/components/common/search'
 import Tree from '~/components/common/tree'
-import Sticky from '~/components/stickys/data'
+import DataSticky from '~/components/stickys/data'
 
 export default {
   components: {
     Search,
     Tree,
-    Sticky
+    DataSticky
   },
   data() {
     return {
@@ -76,7 +78,7 @@ export default {
       analyzeResult: false,
 
       // General
-      collapsed: false,
+      maxMessageDepth: 1,
       name: this.$route.query.name || ''
     }
   },
@@ -86,7 +88,11 @@ export default {
       crawling: '🔍',
       done: '✓',
       error: '❌'
-    })
+    }),
+    displayMessages() {
+      return this.analyzeResult.messages
+        .filter(m => m.depth < this.maxMessageDepth)
+    }
   },
   watch: {
     name: 'doAnalyze'
@@ -131,9 +137,6 @@ export default {
         }
       }
     }
-    &__rotate{
-      transform: rotate(-180deg);
-    }
     &__extender{
       bottom: -20px;
       left: 50%;
@@ -144,13 +147,6 @@ export default {
     }
     &__messages{
       position: relative;
-      &__collapsed{
-        height: 100%;
-      }
-      &__uncollapsed{
-        height: 200px;
-        overflow: hidden;
-      }
       &--positive{
         &:before{
           color: $success;
@@ -159,7 +155,7 @@ export default {
           content: "\f00c";
         }
       }
-      &--negative{
+      &--error{
         &:before{
           color: $error;
           display: inline-block;
