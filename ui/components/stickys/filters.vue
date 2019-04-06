@@ -10,12 +10,15 @@
         Filter by framework
       </p>
       <b-form-group>
-        <b-form-checkbox-group
-          v-model="frameworks"
-          :options="frameworksOptions"
-          switches
-          stacked
-        />
+        <b-form-checkbox
+          v-for="option in frameworksOptions"
+          :key="option.value"
+          v-model="framework"
+          :value="option.value"
+          switch
+        >
+          {{ option.text }}
+        </b-form-checkbox>
       </b-form-group>
     </div>
   </sticky>
@@ -37,7 +40,7 @@ export default {
   data() {
     return {
       sort: this.value.sort,
-      frameworks: this.value.frameworks || []
+      framework: this.value.framework
     }
   },
   computed: {
@@ -51,13 +54,13 @@ export default {
       return [{ value: 'vue', text: 'Vue' },
         { value: 'react', text: 'React' },
         { value: 'jQuery', text: 'jQuery' },
-        { value: 'angular', text: 'Angularjs' },
-        { value: 'javaScript', text: 'javaScript' }
+        { value: 'angular', text: 'Angular' },
+        { value: 'express', text: 'Express' }
       ]
     }
   },
   watch: {
-    frameworks: 'onChange',
+    framework: 'onChange',
     sort: 'onChange'
   },
   mounted() {
@@ -66,7 +69,7 @@ export default {
   methods: {
     onChange() {
       this.$emit('input', {
-        frameworks: this.frameworks,
+        framework: this.framework,
         sort: this.sort
       })
     }

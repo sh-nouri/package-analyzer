@@ -81,9 +81,7 @@ export default {
     async doSearch() {
       this.$router.replace(`?name=${this.name}&filters=${JSON.stringify(this.filters)}`)
       this.searching = true
-
-      const q = [...this.filters.frameworks, this.name].join('+')
-
+      const q = [this.filters.framework, this.name].filter(i => i).join('+')
       const { results } = await this.$axios.$get('/api/package/search?name=' + q)
       this.results = results
       this.searching = false
