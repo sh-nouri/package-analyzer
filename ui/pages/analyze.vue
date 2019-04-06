@@ -1,13 +1,16 @@
 <template>
   <div>
-    <search :value="name" :place-holder="'Enter Package Name'" @search="changeSearch" />
+    <search v-model="name" :value="name" :place-holder="'Enter Package Name'" />
     <div v-if="name">
+      <div class="mt-4">
+        <h1>{{ name }}</h1>
+      </div>
+      <hr>
       <div v-if="analyzeResult" class="row">
         <div class="col col-md-3">
           <sticky :data="analyzeResult.tree.analyze" />
         </div>
         <div class="col col-md-9 mt-4">
-          <h2>{{ name }}</h2>
           <div class="analyze__messages">
             <ul :class="[collapsed? 'analyze__messages__collapsed' : 'analyze__messages__uncollapsed']">
               <li
@@ -30,14 +33,24 @@
               <i :class="{'analyze__rotate': collapsed}" class="fa fa-angle-down" aria-hidden="true" />
             </button>
           </div>
-          <b-modal id="tree-modal" size="xl">
+          <b-modal id="tree-modal" size="xl" lazy>
             <tree :value="analyzeResult.tree" height="1000px" />
           </b-modal>
         </div>
       </div>
-      <div v-else>
-        <p>Crawling...</p>
-        <b-progress v-model="progress" />
+      <div v-else-if="crawlResult">
+        <p>Crawling dependency tree...</p>
+        <b-progress v-model="crawlResult.progress" />
+        <br>
+        <b-row>
+          <b-col style="column-count: 3;">
+            <ul>
+              <li v-for="(status, item) in crawlResult.status" :key="item">
+                {{ statusIcon[status] }} {{ item }}
+              </li>
+            </ul>
+          </b-col>
+        </b-row>
       </div>
     </div>
   </div>
@@ -56,15 +69,27 @@ export default {
   },
   data() {
     return {
-      progress: 0,
+      // Crawl
+      crawlResult: false,
+
+      // Analyze
       analyzeResult: false,
-      collapsed: false
+
+      // General
+      collapsed: false,
+      name: this.$route.query.name || ''
     }
   },
   computed: {
-    name() {
-      return this.$route.query.name
-    }
+    statusIcon: () => ({
+      queue: '✋',
+      crawling: '🔍',
+      done: '✓',
+      error: '❌'
+    })
+  },
+  watch: {
+    name: 'doAnalyze'
   },
   mounted() {
     if (this.name) {
@@ -78,20 +103,19 @@ export default {
   },
   methods: {
     async fetch() {
-      console.log('Fetch...')
-      const { progress } = await this.$axios.$get('/api/package/crawl?name=' + this.name)
-      this.progress = progress
+      this.crawlResult = await this.$axios.$get('/api/package/crawl?name=' + this.name)
 
-      console.log(progress)
-
-      if (progress !== 100) {
+      if (this.crawlResult.progress !== 100) {
         this._timeOut = setTimeout(() => this.fetch(), 1000)
       } else {
         this.analyzeResult = await this.$axios.$get('/api/package/analyze?name=' + this.name)
       }
     },
-    changeSearch(name) {
-      this.$router.push('/analyze?name=' + name)
+    doAnalyze() {
+      this.$router.push('?name=' + this.name)
+      this.analyzeResult = false
+      this.crawlResult = false
+      this.fetch()
     }
   }
 }

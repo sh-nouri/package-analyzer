@@ -3,21 +3,18 @@ import NPMCrawler from '../../lib/crawler'
 const jobs = {}
 
 export default (req, res) => {
-  const { name, version = 'latest' } = req.query
+  const { name, range = 'latest' } = req.query
+  const key = name + '@' + range
 
-  if (!jobs[name]) {
-    jobs[name] = new NPMCrawler(name, version)
-    jobs[name].start().finally(() => {
-      console.log('Job finished:', name)
-    })
+  let job = jobs[key]
+  if (!job) {
+    job = jobs[key] = new NPMCrawler(name, range)
+    job.start()
   }
-  const job = jobs[name]
-
-  // results = results.map(result => pick(result, ['name']))
 
   res.json({
-    // dependencies: Array.from(job.fetchedPackages),
-    // queue: Array.from(job.queue),
-    progress: job.progress
+    progress: job.progress,
+    status: job.status,
+    errors: job.errors.map(e => (e + '').replace('Error: ', ''))
   })
 }

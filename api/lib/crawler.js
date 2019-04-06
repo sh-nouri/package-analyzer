@@ -1,79 +1,71 @@
+import PQueue from 'p-queue'
 import { Package } from '../db'
 import * as npm from './npm'
 import * as github from './github'
 
 export default class NPMCrawler {
-  constructor(name, version, useCache = true) {
-    this.fetchedPackages = new Set()
-    this.queue = new Set()
-
-    this.maxDepth = 4 // d
-    this.averagePaths = 3 // p
-    this.currentDepth = 0
-
+  constructor(name, range) {
     this.name = name
-    this.version = version
-  }
+    this.range = range
 
-  _countNodes(d, p) {
-    return p ** (d + 1) - 1
+    this.queue = new PQueue({ concurrency: 16 })
+
+    this.allTasks = 0
+    this.doneTasks = 0
+
+    this.status = {}
+    this.errors = []
   }
 
   get progress() {
-    const queueSize = this.queue.size
-    const fetchedPackagesSize = this.fetchedPackages.size
-
-    if (queueSize === 0 && fetchedPackagesSize === 0) {
-      return 0
-    }
-
-    const total = 1 + fetchedPackagesSize + queueSize
-    const current = 1 + fetchedPackagesSize
-
-    const p = (current * 100) / (total)
-
-    if (p < 40) {
-      const expectCurrent = this._countNodes(this.currentDepth, this.averagePaths)
-      const expectedTotal = this._countNodes(this.maxDepth, this.averagePaths)
-      return expectCurrent / expectedTotal
-    }
-
-    return p
+    return Math.round((this.doneTasks * 100) / (this.allTasks))
   }
 
-  async start() {
-    await this.crawl(this.name, this.version, 0, true)
+  start() {
+    this.enqueue(this.name, this.range, 0)
   }
 
-  async crawl(name, range, depth = 0, useCache = true) {
-    if (this.fetchedPackages.has(name + '@' + range) || depth > this.maxDepth) {
+  async enqueue(name, range, depth) {
+    const key = name + '@' + range
+
+    if (this.status[key]) {
       return
     }
 
-    if (this.currentDepth < depth) {
-      this.currentDepth = depth
-    }
+    this.status[key] = 'queue'
+    this.allTasks++
 
-    let pkg = await this.getPackage(name, useCache)
+    await this.queue.add(async () => {
+      try {
+        this.status[key] = 'crawling'
+        await this.crawl(name, range, depth)
+        this.status[key] = 'done'
+      } catch (error) {
+        this.errors.push(`[${name}@${range}] ${error}`)
+        this.status[key] = 'error'
+      }
+      this.doneTasks++
+    })
+  }
+
+  async crawl(name, range, depth = 0) {
+    let pkg = await this.getPackage(name, true)
+
     let matched = pkg.getMatchedVersionPackage(range)
-    if (!matched && useCache) {
+
+    if (!matched) {
       pkg = await this.getPackage(name, false)
       matched = pkg.getMatchedVersionPackage(range)
     }
+
     if (!matched) {
       throw new Error('Cannot match any version for ' + name + ' that satisfies ' + range)
     }
 
-    this.fetchedPackages.add(name + '@' + range)
-
-    await Promise.all(Object.entries(matched.dependencies || {})
-      .map(async ([dependencyName, dependencyRange]) => {
-        const queueId = dependencyName + '@' + dependencyRange
-        this.queue.add(queueId)
-        // console.log(queueId)
-        await this.crawl(dependencyName, dependencyRange, depth + 1)
-        this.queue.delete(queueId)
-      }))
+    for (const dependencyName in matched.dependencies) {
+      const dependencyRange = matched.dependencies[dependencyName]
+      this.enqueue(dependencyName, dependencyRange, depth + 1)
+    }
   }
 
   async getPackage(name, useCache) {
@@ -81,6 +73,7 @@ export default class NPMCrawler {
 
     if (!pkg) {
       console.log('Crawling ' + name + ' ...')
+
       const [rawPkg, score, downloads] = await Promise.all([
         npm.getPackage(name),
         npm.getScore(name),
@@ -89,7 +82,11 @@ export default class NPMCrawler {
 
       let githubRepo = {}
       if (rawPkg.githubRepoName) {
-        githubRepo = await github.getRepo(rawPkg.githubRepoName)
+        try {
+          githubRepo = await github.getRepo(rawPkg.githubRepoName)
+        } catch (e) {
+          console.error('Error while getting github repo: ' + rawPkg.githubRepoName)
+        }
       }
 
       pkg = await Package.findOneAndUpdate({ name }, {

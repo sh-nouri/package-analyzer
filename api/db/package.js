@@ -37,7 +37,13 @@ packageSchema.methods.getMatchedVersion = function (range) {
 }
 
 packageSchema.methods.getMatchedVersionPackage = function (range) {
-  return this.versions[this.getMatchedVersion(range)]
+  const matchedVersion = this.getMatchedVersion(range)
+
+  if (!matchedVersion) {
+    return
+  }
+
+  return this.versions[matchedVersion]
 }
 
 packageSchema.methods.getLatest = function () {

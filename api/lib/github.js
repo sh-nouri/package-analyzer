@@ -14,7 +14,7 @@ export async function getRepo(name) {
   const issues = await githubAPI.get(`/repos/${name}/issues?per_page=1`).then(r => r.data)
 
   return {
-    starts: stargazers_count,
+    stars: stargazers_count,
     issues: issues.length ? issues[0].number : 0,
     openIssues: open_issues_count
   }

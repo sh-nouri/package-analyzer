@@ -143,7 +143,7 @@ class Node {
     }
   }
   analyzeStars() {
-    return this._pkg.githubRepo.starts
+    return this._pkg.githubRepo.stars
   }
   analyzeUpdates() {
     const updates = Object.values(this._pkg.time)
