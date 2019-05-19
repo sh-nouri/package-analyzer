@@ -1,14 +1,11 @@
 <template>
-  <div>
-    Home Page
-  </div>
+  <div />
 </template>
 
 <script>
 export default {
+  fetch({ redirect }) {
+    redirect('/bests')
+  }
 }
 </script>
-
-<style scoped>
-
-</style>
