@@ -154,10 +154,18 @@ class Node {
   }
 
   analyzeStars() {
+    if (!this.pkg.githubRepo || !this.pkg.githubRepo.stars) {
+      return 1
+    }
+
     return Math.min(1, this.pkg.githubRepo.stars / 500)
   }
 
   analyzeUpdates() {
+    if (!this.pkg.time) {
+      return 1
+    }
+
     const updates = Object.values(this.pkg.time)
       .map(time => new Date(time))
       .sort((a, b) => b - a)
@@ -194,12 +202,20 @@ class Node {
   }
 
   analyzeIssues() {
+    if (!this.pkg.githubRepo || !this.pkg.githubRepo.issues) {
+      return 1
+    }
+
     if (this.pkg.githubRepo.issues) {
       return 1 - (this.pkg.githubRepo.openIssues / this.pkg.githubRepo.issues)
-    } else return 1
+    }
   }
 
   analyzeDownloads() {
+    if (!this.pkg.downloads) {
+      return 1
+    }
+
     let totalDownload = 0
     for (const download of this.pkg.downloads) {
       totalDownload = totalDownload + download.downloads

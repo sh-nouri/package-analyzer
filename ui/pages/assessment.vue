@@ -1,26 +1,14 @@
 <template>
-  <div v-if="!packages">
-    <b-form-file ref="fileinput" class="mt-5" @input="readFile" />
+  <div>
+    <b-form-file class="mt-5" @input="uploadPackage" />
   </div>
-  <b-row v-else>
-    <b-col v-for="pkg of packages" :key="pkg.name" md="4">
-      <b-card class="m-2">
-        <p>{{ pkg.name }}</p>
-        <b-progress v-model="pkg.progress" />
-      </b-card>
-    </b-col>
-  </b-row>
 </template>
 
 <script>
-import uniq from 'lodash/uniq'
-
 export default {
   data() {
     return {
-      file: null,
-      packages: null,
-      searching: false
+      error: null
     }
   },
   methods: {
@@ -32,37 +20,27 @@ export default {
         reader.readAsText(file)
       })
     },
-    async readFile(file) {
+    async uploadPackage(file) {
+      this.error = null
+
+      // Read file
       const text = await this.readTextFile(file)
       const json = JSON.parse(text)
-      const dependencies = Object.keys(json.dependencies || {})
-      const devDependencies = Object.keys(json.devDependencies || {})
-      const packages = uniq([...dependencies, ...devDependencies])
-      this.startSearch(packages)
-    },
-    startSearch(packages) {
-      const _packages = {}
-      for (const name of packages) {
-        _packages[name] = {
-          name,
-          progress: 0
+
+      // Create virtual pkg
+      const pkg = {
+        name: `${json.name || 'pkg'}_${Math.round(Math.random() * 1000000)}`,
+        dependencies: {
+          ...(json.dependencies || {}),
+          ...(json.devDependencies || {})
         }
       }
-      this.packages = _packages
 
-      for (const name in _packages) {
-        this.fetch(name)
-      }
-      this.searching = true
-    },
-    async fetch(name) {
-      const result = await this.$axios.$get('/api/package/crawl?name=' + name)
-      result.name = name
-      this.packages[name] = result
-      if (result.progress !== 100) {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        this.fetch(name)
-      }
+      // Upload pkg
+      await this.$axios.$post('/api/package/upload', pkg)
+
+      // Redirect to analyze
+      this.$router.push('/analyze?name=' + pkg.name)
     }
   }
 }

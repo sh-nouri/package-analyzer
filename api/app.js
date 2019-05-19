@@ -16,3 +16,5 @@ app.listen(3001, (error) => {
   }
   console.log('API Running: ' + 'http://localhost:3001')
 })
+
+process.on('unhandledRejection', console.error)

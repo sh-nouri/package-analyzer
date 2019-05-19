@@ -4,6 +4,8 @@ import semver from 'semver'
 const packageSchema = new Schema({
   _id: String,
 
+  virtual: Boolean,
+
   name: { type: String, index: true },
   description: String,
   readme: String,
