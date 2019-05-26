@@ -1,4 +1,5 @@
 import PQueue from 'p-queue'
+import consola from 'consola'
 import { Package } from '../db'
 import * as npm from './npm'
 import * as github from './github'
@@ -8,7 +9,7 @@ export default class NPMCrawler {
     this.name = name
     this.range = range
 
-    this.queue = new PQueue({ concurrency: 16 })
+    this.queue = new PQueue({ concurrency: 4 })
 
     this.allTasks = 0
     this.doneTasks = 0
@@ -22,7 +23,7 @@ export default class NPMCrawler {
   }
 
   start() {
-    this.enqueue(this.name, this.range, 0)
+    return this.enqueue(this.name, this.range, 0)
   }
 
   async enqueue(name, range, depth) {
@@ -72,7 +73,7 @@ export default class NPMCrawler {
     let pkg = useCache ? await Package.findOne({ name }) : null
 
     if (!pkg) {
-      console.log('Crawling ' + name + ' ...')
+      consola.debug('Crawling ' + name + ' ...')
 
       const [rawPkg, score, downloads] = await Promise.all([
         npm.getPackage(name),
