@@ -3,9 +3,9 @@ import { suggestions } from '../api/lib/npm'
 import NPMCrawler from '../api/lib/crawler'
 
 async function main() {
-  const [name] = process.argv.splice(2)
+  const [name, size = 250] = process.argv.splice(2)
   console.log('Query: ' + name)
-  const pkgs = await suggestions(name, 100).then(results => results.map(r => r.package.name))
+  const pkgs = await suggestions(name, size).then(results => results.map(r => r.package.name))
 
   const queue = new PQueue({ concurrency: 4 })
 

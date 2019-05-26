@@ -72,7 +72,7 @@ export default class NPMCrawler {
   async getPackage(name, useCache) {
     let pkg = useCache ? await Package.findOne({ name }) : null
 
-    if (!pkg) {
+    if (!pkg || pkg.githubRepo.stars === undefined) {
       consola.debug('Crawling ' + name + ' ...')
 
       const [rawPkg, score, downloads] = await Promise.all([
@@ -86,7 +86,11 @@ export default class NPMCrawler {
         try {
           githubRepo = await github.getRepo(rawPkg.githubRepoName)
         } catch (e) {
-          console.error('Error while getting github repo: ' + rawPkg.githubRepoName)
+          if (e.response.status === 404) {
+            githubRepo = { stars: 0, issues: 0, openIssues: 0 }
+          } else {
+            console.error('Github rate limit!', e.response.headers['X-RateLimit-Reset'])
+          }
         }
       }
 
