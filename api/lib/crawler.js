@@ -89,7 +89,11 @@ export default class NPMCrawler {
           if (e.response.status === 404) {
             githubRepo = { stars: 0, issues: 0, openIssues: 0 }
           } else {
-            console.error('Github rate limit!', e.response.headers['X-RateLimit-Reset'])
+            const now = new Date()
+            const rateLimitReset = new Date(parseInt(e.response.headers['x-ratelimit-reset'] * 1000))
+            if (rateLimitReset - now > 0) {
+              console.error('Github rate limit! Please try again in', Math.round((rateLimitReset - now) / (1000 * 60)), 'minutes!')
+            }
           }
         }
       }
