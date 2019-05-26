@@ -1,0 +1,19 @@
+version: '2.2'
+
+services:
+    mongo:
+        image: mongo
+        mem_limit: 200m
+        volumes:
+            - ./.mongo:/data/db
+    crawl:
+        image: node:alpine
+        command: sh -c "yarn && yarn crawl $NAME"
+        working_dir: /app
+        scale: 0
+        volumes:
+            - .:/app
+        environment:
+            MONGO_URL: mongodb://mongo:27017/package_analyzer
+        depends_on:
+            - mongo
