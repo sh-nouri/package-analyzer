@@ -1,28 +1,11 @@
 import PQueue from 'p-queue'
-import uniq from 'lodash/uniq'
-import axios from 'axios'
+import { suggestions } from '../api/lib/npm'
 import NPMCrawler from '../api/lib/crawler'
 
-async function getDependants(name, skip = 0, limit = 10000) {
-  const { data: { rows } } = await axios({
-    method: 'get',
-    timeout: 3000,
-    url: 'https://skimdb.npmjs.com/registry/_design/app/_view/dependedUpon',
-    params: {
-      group_level: 2,
-      startkey: [name],
-      endkey: [name],
-      skip: skip,
-      limit: limit
-    }
-  })
-  return uniq(rows.map(r => r.key[1]).filter(Boolean))
-}
-
 async function main() {
-  const [mainPkgName, skip, limit] = process.argv.splice(2)
-  console.log('Fetching dependants of ' + mainPkgName)
-  const dependents = await getDependants(mainPkgName, skip, limit)
+  const [name] = process.argv.splice(2)
+  console.log('Query: ' + name)
+  const pkgs = await suggestions(name, 100).then(results => results.map(r => r.package.name))
 
   const queue = new PQueue({ concurrency: 4 })
 
@@ -30,12 +13,12 @@ async function main() {
   const done = new Set()
 
   function log() {
-    process.stdout.write('\r ' + `(${done.size} / ${dependents.length}) ` + 'Crawiling: ' + Array.from(active).sort().join(', '))
+    process.stdout.write('\r ' + `(${done.size} / ${pkgs.length}) ` + 'Crawiling: ' + Array.from(active).sort().join(', '))
   }
 
   log()
 
-  await queue.addAll(dependents.map(name => async () => {
+  await queue.addAll(pkgs.map(name => async () => {
     active.add(name)
     log()
 

@@ -31,10 +31,11 @@ export async function getPackage(name) {
   }
 }
 
-export async function suggestions(text) {
+export async function suggestions(text, size) {
   const { data } = await registryAPI.get('/-/v1/search', {
     params: {
-      text
+      text,
+      size
     }
   })
 
