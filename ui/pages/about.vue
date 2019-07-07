@@ -1,5 +1,5 @@
 <template>
-  <div>About Page</div>
+  <div>Developed By Shabnam Nouri</div>
 </template>
 
 <script>
