@@ -61,7 +61,7 @@ export default {
       searching: false,
       name: this.$route.query.name || '',
       filters: this.$route.query.filters
-        ? JSON.parse(decodeURIComponent(this.$route.query.filters)) : {}
+        ? JSON.parse(decodeURIComponent(this.$route.query.filters)) : { sort: 'overall' }
     }
   },
   watch: {
@@ -81,8 +81,7 @@ export default {
     async doSearch() {
       this.$router.replace(`?name=${this.name}&filters=${JSON.stringify(this.filters)}`)
       this.searching = true
-      const q = [this.filters.framework, this.name].filter(i => i).join('+')
-      const { results } = await this.$axios.$get('/api/package/search?name=' + q)
+      const { results } = await this.$axios.$get('/api/package/search?name=' + this.name + '&filters=' + JSON.stringify(this.filters))
       this.results = results
       this.searching = false
     }

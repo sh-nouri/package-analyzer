@@ -2,11 +2,24 @@
 import * as npm from '../../lib/npm'
 
 export default async (req, res) => {
-  const results = await npm.suggestions(req.query.name)
+  const { framework, sort } = JSON.parse(req.query.filters || '{}')
 
-  // results = results.map(result => pick(result, ['name']))
+  const q = {}
 
-  res.json({
-    results
-  })
+  q.text = req.query.name || ''
+
+  if (framework) {
+    q.text += ' ' + framework
+  }
+
+  if (sort && sort !== 'overall') {
+    q.quality = 0
+    q.popularity = 0
+    q.maintenance = 0
+    q[sort] = 1
+  }
+
+  const results = await npm.suggestions(q)
+
+  res.json({ results })
 }

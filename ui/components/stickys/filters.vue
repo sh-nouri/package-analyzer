@@ -45,10 +45,7 @@ export default {
   },
   computed: {
     sortOptions() {
-      return [{ value: 1, text: 'maintainance' },
-        { value: 2, text: 'popularity' },
-        { value: 3, text: 'quality' }
-      ]
+      return ['overall', 'maintenance', 'popularity', 'quality']
     },
     frameworksOptions() {
       return [{ value: 'vue', text: 'Vue' },
